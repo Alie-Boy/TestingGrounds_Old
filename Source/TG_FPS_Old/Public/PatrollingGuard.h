@@ -13,9 +13,12 @@ UCLASS()
 class TG_FPS_OLD_API APatrollingGuard : public ATP_ThirdPersonCharacter
 {
 	GENERATED_BODY()
+
+public:
+	TArray<AActor*> GetPatrollingPoints() { return PatrolPoints; }
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "Patrol Points CPP")
+	UPROPERTY(EditInstanceOnly, Category = "Patrol Points CPP")
 	TArray<AActor*> PatrolPoints;
 	
 };
