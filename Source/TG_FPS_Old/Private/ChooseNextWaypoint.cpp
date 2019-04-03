@@ -4,7 +4,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "AIController.h"
-#include "Public/PatrollingGuard.h"
+#include "Public/PatrolRoute.h"
 
 EBTNodeResult::Type UChooseNextWaypoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -17,9 +17,13 @@ EBTNodeResult::Type UChooseNextWaypoint::ExecuteTask(UBehaviorTreeComponent& Own
 
 void UChooseNextWaypoint::FindPatrolPoints(UBehaviorTreeComponent &OwnerComp)
 {
-	auto ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
-	auto ControlledGuard = Cast<APatrollingGuard>(ControlledPawn);
-	PatrolPoints = ControlledGuard->GetPatrollingPoints();
+	APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
+	auto PatrolRoute = ControlledPawn->FindComponentByClass<UPatrolRoute>();
+	
+	if (!ensure(PatrolRoute)) { return; }
+	else {
+		PatrolPoints = PatrolRoute->GetPatrollingPoints();
+	}
 }
 
 int32 UChooseNextWaypoint::FindNextWaypoint(UBehaviorTreeComponent &OwnerComp)
@@ -29,8 +33,15 @@ int32 UChooseNextWaypoint::FindNextWaypoint(UBehaviorTreeComponent &OwnerComp)
 	BlackboardComponent->SetValueAsObject(WaypointKey.SelectedKeyName, PatrolPoints[Index]);
 	return Index;
 }
+
 void UChooseNextWaypoint::CycleIndex(int32 Index, UBehaviorTreeComponent &OwnerComp)
 {
+	if (PatrolPoints.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Patrol Points in %s"), *OwnerComp.GetAIOwner()->GetPawn()->GetName());
+		return;
+	}
+
 	if (Index >= PatrolPoints.Num()-1) // choosing >= because second last iteration through Tree sets Index last
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsInt(IndexKey.SelectedKeyName, 0);
@@ -40,5 +51,3 @@ void UChooseNextWaypoint::CycleIndex(int32 Index, UBehaviorTreeComponent &OwnerC
 		OwnerComp.GetBlackboardComponent()->SetValueAsInt(IndexKey.SelectedKeyName, Index+1);
 	}
 }
-
-
