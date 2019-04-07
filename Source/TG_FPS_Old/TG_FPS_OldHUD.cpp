@@ -10,7 +10,7 @@
 ATG_FPS_OldHUD::ATG_FPS_OldHUD()
 {
 	// Set the crosshair texture
-	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/FirstPerson/Textures/FirstPersonCrosshair"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/Player/Textures/FirstPersonCrosshair"));
 	CrosshairTex = CrosshairTexObj.Object;
 }
 
