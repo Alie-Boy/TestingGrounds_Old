@@ -2,7 +2,7 @@
 
 #include "TG_FPS_OldGameMode.h"
 #include "TG_FPS_OldHUD.h"
-#include "TG_FPS_OldCharacter.h"
+#include "Player/FirstPersonCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ATG_FPS_OldGameMode::ATG_FPS_OldGameMode()
