@@ -13,6 +13,9 @@ class AFirstPersonCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category=Gun)
+	TSubclassOf<class AGun> GunBP;
+
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	class USkeletalMeshComponent* Mesh1P;
