@@ -47,5 +47,6 @@ private:
 
 	AGun* Gun = nullptr;
 
-	void OnFire();
+	UFUNCTION(BlueprintCallable)
+	void PullTrigger();
 };
