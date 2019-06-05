@@ -34,14 +34,23 @@ AMannequin::AMannequin()
 void AMannequin::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!GunBlueprint) { UE_LOG(LogTemp, Warning, TEXT("No blueprint assigned to GunBlueprint in Mannequin")) }
-	else
-	{
-		Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
-		Gun->AttachToComponent(FPArms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-		Gun->AnimInstance = GetMesh()->GetAnimInstance();
+	if (!GunBlueprint) { 
+		UE_LOG(LogTemp, Warning, TEXT("No blueprint assigned to GunBlueprint in Mannequin"));
+		return;
 	}
+	Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
+	if (IsPlayerControlled()) {
+		Gun->AttachToComponent(FPArms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Gun->FPAnimInstance = FPArms->GetAnimInstance();
+	}
+	else {
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Gun->TPAnimInstance = GetMesh()->GetAnimInstance();
+	}
+	
+
 }
+
 
 // Called every frame
 void AMannequin::Tick(float DeltaTime)
@@ -56,6 +65,13 @@ void AMannequin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMannequin::PullTrigger);
+}
+
+void AMannequin::UnPossessed()
+{
+	Super::UnPossessed();
+	if (!Gun) return;
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
 
 void AMannequin::PullTrigger()
