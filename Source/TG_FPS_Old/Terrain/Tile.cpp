@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#define OUT   
 
 #include "Terrain/Tile.h"
 #include "Components\ArrowComponent.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ATile::ATile()
@@ -40,7 +41,7 @@ void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSp
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CastSphere(GetActorLocation(), 300);
 }
 
 // Called every frame
@@ -48,5 +49,21 @@ void ATile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+bool ATile::CastSphere(FVector Location, int32 Radius)
+{
+	FHitResult HitResult;
+	bool HasHit = GetWorld()->SweepSingleByChannel(
+		OUT HitResult,
+		Location,
+		Location + 0.1f, // Sweep won't detect any hit without any difference between start and end location
+		FQuat::Identity,
+		ECollisionChannel::ECC_Camera,
+		FCollisionShape::MakeSphere(Radius)
+	);
+	FColor Color = HasHit ? FColor::Red : FColor::Green;
+	DrawDebugSphere(GetWorld(), GetActorLocation(), 300, 20, Color, true);
+	return HasHit;
 }
 
