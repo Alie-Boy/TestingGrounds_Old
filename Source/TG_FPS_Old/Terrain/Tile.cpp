@@ -59,11 +59,11 @@ bool ATile::CastSphere(FVector Location, int32 Radius)
 		Location,
 		Location + 0.1f, // Sweep won't detect any hit without any difference between start and end location
 		FQuat::Identity,
-		ECollisionChannel::ECC_Camera,
+		ECollisionChannel::ECC_GameTraceChannel2,
 		FCollisionShape::MakeSphere(Radius)
 	);
 	FColor Color = HasHit ? FColor::Red : FColor::Green;
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 300, 20, Color, true);
+	DrawDebugCapsule(GetWorld(), Location, 0, Radius, FQuat::Identity, Color, true, 100);
 	return HasHit;
 }
 
