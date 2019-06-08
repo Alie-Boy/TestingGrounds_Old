@@ -16,7 +16,7 @@ public:
 	ATile();
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn);
+	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500);
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,5 +28,10 @@ public:
 
 private:
 
-	bool CastSphere(FVector Location, int32 Radius);
+	/// returns true if something if something exists near this radius
+	bool DoesAnythingExistNearby(FVector Location, int32 Radius);
+
+	bool GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius);
+
+	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint);
 };

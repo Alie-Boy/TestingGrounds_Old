@@ -13,35 +13,48 @@ ATile::ATile()
 
 }
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn)
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius)
 {
 	if (!ToSpawn) return;
-	UArrowComponent* Arrow = FindComponentByClass<UArrowComponent>();
-	FVector min = (Arrow->GetComponentLocation()) + FVector(-4000.f, -2000.f, 100.f);
-	FVector max = (Arrow->GetComponentLocation()) + FVector(-100.f , 2000.f, 100.f);
-	/*FVector Min(0, -2000, 0);
-	FVector Max(4000, 2000, 0);
-	FBox Bounds(Min, Max);*/
 	int32 NumberOfSpawns = FMath::RandRange(minSpawn, maxSpawn);
 	for (size_t i = 0; i < NumberOfSpawns; i++)
 	{
-		FVector SpawnLocation = FMath::RandPointInBox(FBox(min, max));
-		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
-		SpawnedActor->SetActorLocation(SpawnLocation);
-		SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(0.f, 359.f), 0.f));
-		SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
-		/*FVector SpawnPoint = FMath::RandPointInBox(Bounds);
-		AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
-		Spawned->SetActorRelativeLocation(SpawnPoint);
-		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));*/
+		FVector SpawnPoint;
+		if (GetEmptyLocation(OUT SpawnPoint, Radius))
+		{
+			PlaceActor(ToSpawn, SpawnPoint);
+		}
 	}
+}
+
+bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
+{	
+	UArrowComponent* Arrow = FindComponentByClass<UArrowComponent>();
+	FVector min = (Arrow->GetComponentLocation()) + FVector(-4000.f, -2000.f, 100.f);
+	FVector max = (Arrow->GetComponentLocation()) + FVector(-100.f , 2000.f, 100.f);
+	const int32 MAX_ATTEMPTS = 20;
+	for (size_t i = 0; i != MAX_ATTEMPTS; ++i)
+	{
+		OutSpawnPoint = FMath::RandPointInBox(FBox(min, max));
+		if (DoesAnythingExistNearby(OutSpawnPoint, Radius)) { continue; } // if Sphere cast hits something, try again
+		else { return true; }
+	}
+	return false;
+}
+
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint)
+{
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
+	SpawnedActor->SetActorLocation(SpawnPoint);
+	SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(0.f, 359.f), 0.f));
+	SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
 }
 
 // Called when the game starts or when spawned
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
-	CastSphere(GetActorLocation(), 300);
+
 }
 
 // Called every frame
@@ -51,9 +64,13 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-bool ATile::CastSphere(FVector Location, int32 Radius)
+bool ATile::DoesAnythingExistNearby(FVector Location, int32 Radius)
 {
 	FHitResult HitResult;
+	
+	// this is not needed in my case as my Location provided is already Global.
+	//FVector GlobalLocation = ActorToWorld().TransformPosition(Location);
+
 	bool HasHit = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
 		Location,
@@ -66,4 +83,3 @@ bool ATile::CastSphere(FVector Location, int32 Radius)
 	DrawDebugCapsule(GetWorld(), Location, 0, Radius, FQuat::Identity, Color, true, 100);
 	return HasHit;
 }
-
