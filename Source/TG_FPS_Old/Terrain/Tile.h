@@ -16,7 +16,8 @@ public:
 	ATile();
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500);
+	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500,
+					bool HasRandomScale = false, float minScaleMultiplier = 1, float maxScaleMultiplier = 1);
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,5 +34,5 @@ private:
 
 	bool GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius);
 
-	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint);
+	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale);
 };

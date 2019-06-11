@@ -13,7 +13,8 @@ ATile::ATile()
 
 }
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius)
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius,
+	bool HasRandomScale, float minScaleMultiplier, float maxScaleMultiplier)
 {
 	if (!ToSpawn) return;
 	int32 NumberOfSpawns = FMath::RandRange(minSpawn, maxSpawn);
@@ -22,7 +23,12 @@ void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSp
 		FVector SpawnPoint;
 		if (GetEmptyLocation(OUT SpawnPoint, Radius))
 		{
-			PlaceActor(ToSpawn, SpawnPoint);
+			float ScaleMultiplier = 1.f;
+			if (HasRandomScale)
+			{
+				ScaleMultiplier = FMath::RandRange(minScaleMultiplier, maxScaleMultiplier);
+			}
+			PlaceActor(ToSpawn, SpawnPoint, ScaleMultiplier);
 		}
 	}
 }
@@ -42,11 +48,12 @@ bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
 	return false;
 }
 
-void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint)
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale)
 {
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
 	SpawnedActor->SetActorLocation(SpawnPoint);
-	SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(0.f, 359.f), 0.f));
+	SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(-180.f, 180.f), 0.f));
+	SpawnedActor->SetActorScale3D( GetActorScale3D() * Scale );
 	SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
 }
 
