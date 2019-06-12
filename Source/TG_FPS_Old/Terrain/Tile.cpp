@@ -4,13 +4,13 @@
 #include "Terrain/Tile.h"
 #include "Components\ArrowComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components\HierarchicalInstancedStaticMeshComponent.h"
 
 // Sets default values
 ATile::ATile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius,
@@ -86,7 +86,7 @@ bool ATile::DoesAnythingExistNearby(FVector Location, int32 Radius)
 		ECollisionChannel::ECC_GameTraceChannel2,
 		FCollisionShape::MakeSphere(Radius)
 	);
-	FColor Color = HasHit ? FColor::Red : FColor::Green;
-	DrawDebugCapsule(GetWorld(), Location, 0, Radius, FQuat::Identity, Color, true, 100);
+	/*FColor Color = HasHit ? FColor::Red : FColor::Green;
+	DrawDebugCapsule(GetWorld(), Location, 0, Radius, FQuat::Identity, Color, true, 100);*/
 	return HasHit;
 }

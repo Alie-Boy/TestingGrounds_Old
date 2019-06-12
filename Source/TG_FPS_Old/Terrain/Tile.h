@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+class UHierarchicalInstancedStaticMeshComponent;
+
 UCLASS()
 class TG_FPS_OLD_API ATile : public AActor
 {
@@ -14,7 +16,7 @@ class TG_FPS_OLD_API ATile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ATile();
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500,
 					bool HasRandomScale = false, float minScaleMultiplier = 1, float maxScaleMultiplier = 1);
