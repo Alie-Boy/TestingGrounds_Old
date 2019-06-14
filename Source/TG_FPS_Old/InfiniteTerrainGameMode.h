@@ -23,7 +23,7 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UActorPool* NavMeshBoundsVolume = nullptr;
+	class UActorPool* NavMeshBoundsVolumePool = nullptr;
 
 private:
 

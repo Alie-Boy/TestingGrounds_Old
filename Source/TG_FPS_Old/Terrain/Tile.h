@@ -22,12 +22,16 @@ public:
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500,
 					bool HasRandomScale = false, float minScaleMultiplier = 1, float maxScaleMultiplier = 1);
 
+	UFUNCTION(BlueprintCallable, Category = "Pool")
+	void SetNavMeshBoundPool(UActorPool* ActorPool);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Pool")
-	void SetNavMeshBoundPool(UActorPool* ActorPool);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void PositionNavMeshBoundsVolume();
 
 public:	
 	// Called every frame
@@ -42,5 +46,7 @@ private:
 
 	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale);
 
-	UActorPool* NavMeshBoundsVolume = nullptr;
+	UActorPool* Pool = nullptr;
+
+	AActor* NavMeshBoundsVolume;
 };
