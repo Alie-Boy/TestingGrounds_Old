@@ -5,6 +5,7 @@
 #include "Components\ArrowComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Components\HierarchicalInstancedStaticMeshComponent.h"
+#include "ActorPool.h"
 
 // Sets default values
 ATile::ATile()
@@ -62,6 +63,12 @@ void ATile::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void ATile::SetNavMeshBoundPool(UActorPool * ActorPool)
+{
+	NavMeshBoundsVolume = ActorPool;
+	UE_LOG(LogTemp, Warning, TEXT("Setting up [%s]"), *NavMeshBoundsVolume->GetName());
 }
 
 // Called every frame

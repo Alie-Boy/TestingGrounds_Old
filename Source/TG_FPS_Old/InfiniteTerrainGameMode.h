@@ -15,8 +15,15 @@ class TG_FPS_OLD_API AInfiniteTerrainGameMode : public ATG_FPS_OldGameMode
 	
 public:
 
+	AInfiniteTerrainGameMode();
+
 	UFUNCTION(BlueprintCallable, Category="BoundsVolume")
 	void PopulateBoundsVolumePool();
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UActorPool* NavMeshBoundsVolume = nullptr;
 
 private:
 

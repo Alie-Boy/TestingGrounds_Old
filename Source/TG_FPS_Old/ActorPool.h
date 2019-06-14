@@ -1,0 +1,23 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "ActorPool.generated.h"
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class TG_FPS_OLD_API UActorPool : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	// Sets default values for this component's properties
+	UActorPool();
+
+	AActor* Checkour();
+	void Return(AActor* ActorToReturn);
+
+	void Add(AActor* ActorToReturn);
+};

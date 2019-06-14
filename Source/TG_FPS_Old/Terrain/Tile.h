@@ -7,6 +7,7 @@
 #include "Tile.generated.h"
 
 class UHierarchicalInstancedStaticMeshComponent;
+class UActorPool;
 
 UCLASS()
 class TG_FPS_OLD_API ATile : public AActor
@@ -25,6 +26,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Pool")
+	void SetNavMeshBoundPool(UActorPool* ActorPool);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,4 +41,6 @@ private:
 	bool GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius);
 
 	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale);
+
+	UActorPool* NavMeshBoundsVolume = nullptr;
 };
