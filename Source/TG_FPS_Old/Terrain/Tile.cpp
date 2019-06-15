@@ -27,6 +27,25 @@ void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Pool->Return(NavMeshBoundsVolume);
 }
 
+void ATile::SetNavMeshBoundPool(UActorPool * ActorPool)
+{
+	Pool = ActorPool;
+
+	PositionNavMeshBoundsVolume();
+}
+
+void ATile::PositionNavMeshBoundsVolume()
+{
+	NavMeshBoundsVolume = Pool->Checkout();
+	if (!NavMeshBoundsVolume)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[%s] Not enough actors in the pool"), *(GetName()));
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("[%s] checked out {%s}"), *(GetName()), *(NavMeshBoundsVolume->GetName()));
+	NavMeshBoundsVolume->SetActorLocation(GetActorLocation());
+}
+
 
 void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius,
 	bool HasRandomScale, float minScaleMultiplier, float maxScaleMultiplier)
@@ -70,24 +89,6 @@ void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Sc
 	SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(-180.f, 180.f), 0.f));
 	SpawnedActor->SetActorScale3D( GetActorScale3D() * Scale );
 	SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
-}
-
-void ATile::SetNavMeshBoundPool(UActorPool * ActorPool)
-{
-	Pool = ActorPool;
-
-	PositionNavMeshBoundsVolume();
-}
-
-void ATile::PositionNavMeshBoundsVolume()
-{
-	NavMeshBoundsVolume = Pool->Checkout();
-	if (!NavMeshBoundsVolume)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Not enough actors in the pool"));
-		return;
-	}
-	NavMeshBoundsVolume->SetActorLocation(GetActorLocation());
 }
 
 // Called every frame

@@ -6,7 +6,7 @@
 #include "EngineUtils.h"
 #include "ActorPool.h"
 
-AInfiniteTerrainGameMode::AInfiniteTerrainGameMode()
+AInfiniteTerrainGameMode::AInfiniteTerrainGameMode() : Super()
 {
 	NavMeshBoundsVolumePool = CreateDefaultSubobject<UActorPool>("NavMeshBoundsVolume");
 }
