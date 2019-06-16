@@ -6,12 +6,14 @@
 #include "DrawDebugHelpers.h"
 #include "Components\HierarchicalInstancedStaticMeshComponent.h"
 #include "ActorPool.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 ATile::ATile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	NavigationBoundOffsets = FVector(2000.f, 0.f, 0.f);
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +45,8 @@ void ATile::PositionNavMeshBoundsVolume()
 		return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("[%s] checked out {%s}"), *(GetName()), *(NavMeshBoundsVolume->GetName()));
-	NavMeshBoundsVolume->SetActorLocation(GetActorLocation());
+	NavMeshBoundsVolume->SetActorLocation(GetActorLocation()+NavigationBoundOffsets);
+	FNavigationSystem::Build(*GetWorld());
 }
 
 

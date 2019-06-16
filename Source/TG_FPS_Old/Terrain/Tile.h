@@ -26,6 +26,10 @@ public:
 	void SetNavMeshBoundPool(UActorPool* ActorPool);
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Navigation")
+	FVector NavigationBoundOffsets;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
