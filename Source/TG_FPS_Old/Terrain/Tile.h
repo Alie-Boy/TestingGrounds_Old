@@ -6,6 +6,15 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+USTRUCT()
+struct FSpawnPosition {
+	GENERATED_USTRUCT_BODY()
+
+	FVector Location;
+	float Rotation;
+	float Scale;
+};
+
 class UHierarchicalInstancedStaticMeshComponent;
 class UActorPool;
 
@@ -19,8 +28,7 @@ public:
 	ATile();
 	
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500,
-					bool HasRandomScale = false, float minScaleMultiplier = 1, float maxScaleMultiplier = 1);
+	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500, float minScale = 1.f, float maxScale = 1.f);
 
 	UFUNCTION(BlueprintCallable, Category = "Pool")
 	void SetNavMeshBoundPool(UActorPool* ActorPool);
@@ -43,12 +51,14 @@ public:
 
 private:
 
-	/// returns true if something if something exists near this radius
+	TArray<FSpawnPosition> GenerateSpawnPositions(int32 minSpawn, int32 maxSpawn, int32 Radius = 500, float minScale = 1.f, float maxScale = 1.f);
+
+	// returns true if something if something exists near this radius
 	bool DoesAnythingExistNearby(FVector Location, int32 Radius);
 
 	bool GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius);
 
-	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale);
+	void PositionActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition);
 
 	UActorPool* Pool = nullptr;
 

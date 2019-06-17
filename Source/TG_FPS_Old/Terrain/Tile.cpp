@@ -50,24 +50,31 @@ void ATile::PositionNavMeshBoundsVolume()
 }
 
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius,
-	bool HasRandomScale, float minScaleMultiplier, float maxScaleMultiplier)
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
 {
 	if (!ToSpawn) return;
+	TArray<FSpawnPosition> SpawnPositions = GenerateSpawnPositions(minSpawn, maxSpawn, Radius, minScale, maxScale);
+	for (FSpawnPosition SpawnPosition : SpawnPositions)
+	{
+		PositionActor(ToSpawn, SpawnPosition);
+	}
+}
+
+TArray<FSpawnPosition> ATile::GenerateSpawnPositions(int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
+{
+	TArray<FSpawnPosition> SpawnPositions;
 	int32 NumberOfSpawns = FMath::RandRange(minSpawn, maxSpawn);
 	for (size_t i = 0; i < NumberOfSpawns; i++)
 	{
-		FVector SpawnPoint;
-		if (GetEmptyLocation(OUT SpawnPoint, Radius))
+		FSpawnPosition SpawnPosition;
+		SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
+		SpawnPosition.Scale = FMath::RandRange(minScale, maxScale);
+		if (GetEmptyLocation(OUT SpawnPosition.Location, Radius * SpawnPosition.Scale))
 		{
-			float ScaleMultiplier = 1.f;
-			if (HasRandomScale)
-			{
-				ScaleMultiplier = FMath::RandRange(minScaleMultiplier, maxScaleMultiplier);
-			}
-			PlaceActor(ToSpawn, SpawnPoint, ScaleMultiplier);
+			SpawnPositions.Add(SpawnPosition);
 		}
 	}
+	return SpawnPositions;
 }
 
 bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
@@ -85,12 +92,12 @@ bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
 	return false;
 }
 
-void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale)
+void ATile::PositionActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition)
 {
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
-	SpawnedActor->SetActorLocation(SpawnPoint);
-	SpawnedActor->SetActorRotation(FRotator(0.f, FMath::RandRange(-180.f, 180.f), 0.f));
-	SpawnedActor->SetActorScale3D( GetActorScale3D() * Scale );
+	SpawnedActor->SetActorLocation(SpawnPosition.Location);
+	SpawnedActor->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
+	SpawnedActor->SetActorScale3D( GetActorScale3D() * SpawnPosition.Scale );
 	SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
 }
 
