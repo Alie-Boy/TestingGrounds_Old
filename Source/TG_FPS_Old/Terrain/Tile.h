@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500, float minScale = 1.f, float maxScale = 1.f);
 
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void PlaceAIPawns(TSubclassOf<APawn> ToSpawn, int32 minSpawn = 1, int32 maxSpawn = 1, int32 Radius = 500);
+
 	UFUNCTION(BlueprintCallable, Category = "Pool")
 	void SetNavMeshBoundPool(UActorPool* ActorPool);
 

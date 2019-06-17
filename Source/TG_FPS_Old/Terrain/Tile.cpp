@@ -60,6 +60,19 @@ void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSp
 	}
 }
 
+void ATile::PlaceAIPawns(TSubclassOf<APawn> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius)
+{
+	if (!ToSpawn) return;
+	TArray<FSpawnPosition> SpawnPositions = GenerateSpawnPositions(minSpawn, maxSpawn, Radius, 1.f, 1.f);
+	for (FSpawnPosition SpawnPosition : SpawnPositions)
+	{
+		APawn* Pawn = GetWorld()->SpawnActor<APawn>(ToSpawn);
+		Pawn->SetActorLocation(SpawnPosition.Location);
+		Pawn->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
+		//Pawn->SpawnDefaultController();		Using "Placed in World or Spawned" option in BP_Character.
+	}
+}
+
 TArray<FSpawnPosition> ATile::GenerateSpawnPositions(int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
 {
 	TArray<FSpawnPosition> SpawnPositions;
