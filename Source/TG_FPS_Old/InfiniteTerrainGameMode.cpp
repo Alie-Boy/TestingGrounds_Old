@@ -26,3 +26,5 @@ void AInfiniteTerrainGameMode::PopulateBoundsVolumePool()
 		++NavMeshIterator;
 	}
 }
+
+void AInfiniteTerrainGameMode::NewTileConquered() { Score++; }

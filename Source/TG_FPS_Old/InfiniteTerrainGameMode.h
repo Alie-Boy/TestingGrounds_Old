@@ -20,7 +20,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="BoundsVolume")
 	void PopulateBoundsVolumePool();
 
+	UFUNCTION(BlueprintCallable, Category = "Score")
+	void NewTileConquered();
+
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Score")
+	int32 Score = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UActorPool* NavMeshBoundsVolumePool = nullptr;
