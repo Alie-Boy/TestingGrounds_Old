@@ -52,42 +52,12 @@ void ATile::PositionNavMeshBoundsVolume()
 
 void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
 {
-	if (!ToSpawn) return;
-	TArray<FSpawnPosition> SpawnPositions = GenerateSpawnPositions(minSpawn, maxSpawn, Radius, minScale, maxScale);
-	for (FSpawnPosition SpawnPosition : SpawnPositions)
-	{
-		PositionActor(ToSpawn, SpawnPosition);
-	}
+	RandomlyPlaceActors<AActor>(ToSpawn, minSpawn, maxSpawn, Radius, minScale, maxScale);
 }
 
 void ATile::PlaceAIPawns(TSubclassOf<APawn> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius)
 {
-	if (!ToSpawn) return;
-	TArray<FSpawnPosition> SpawnPositions = GenerateSpawnPositions(minSpawn, maxSpawn, Radius, 1.f, 1.f);
-	for (FSpawnPosition SpawnPosition : SpawnPositions)
-	{
-		APawn* Pawn = GetWorld()->SpawnActor<APawn>(ToSpawn);
-		Pawn->SetActorLocation(SpawnPosition.Location);
-		Pawn->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
-		//Pawn->SpawnDefaultController();		Using "Placed in World or Spawned" option in BP_Character.
-	}
-}
-
-TArray<FSpawnPosition> ATile::GenerateSpawnPositions(int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
-{
-	TArray<FSpawnPosition> SpawnPositions;
-	int32 NumberOfSpawns = FMath::RandRange(minSpawn, maxSpawn);
-	for (size_t i = 0; i < NumberOfSpawns; i++)
-	{
-		FSpawnPosition SpawnPosition;
-		SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
-		SpawnPosition.Scale = FMath::RandRange(minScale, maxScale);
-		if (GetEmptyLocation(OUT SpawnPosition.Location, Radius * SpawnPosition.Scale))
-		{
-			SpawnPositions.Add(SpawnPosition);
-		}
-	}
-	return SpawnPositions;
+	RandomlyPlaceActors<APawn>(ToSpawn, minSpawn, maxSpawn, Radius, 1.f, 1.f);
 }
 
 bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
@@ -105,13 +75,21 @@ bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
 	return false;
 }
 
-void ATile::PositionActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition)
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition)
 {
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
 	SpawnedActor->SetActorLocation(SpawnPosition.Location);
 	SpawnedActor->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
 	SpawnedActor->SetActorScale3D( GetActorScale3D() * SpawnPosition.Scale );
 	SpawnedActor->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
+}
+
+void ATile::PlaceActor(TSubclassOf<APawn> ToSpawn, const FSpawnPosition & SpawnPosition)
+{
+	APawn* Pawn = GetWorld()->SpawnActor<APawn>(ToSpawn);
+	Pawn->SetActorLocation(SpawnPosition.Location);
+	Pawn->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
+	//Pawn->SpawnDefaultController();		Using "Placed in World or Spawned" option in BP_Character.
 }
 
 // Called every frame

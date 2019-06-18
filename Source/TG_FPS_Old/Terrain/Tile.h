@@ -54,14 +54,31 @@ public:
 
 private:
 
-	TArray<FSpawnPosition> GenerateSpawnPositions(int32 minSpawn, int32 maxSpawn, int32 Radius = 500, float minScale = 1.f, float maxScale = 1.f);
+	template<class T>
+	void RandomlyPlaceActors(TSubclassOf<T> ToSpawn, int32 minSpawn, int32 maxSpawn, int32 Radius, float minScale, float maxScale)
+	{
+		if (!ToSpawn) return;
+		int32 NumberOfSpawns = FMath::RandRange(minSpawn, maxSpawn);
+		for (int32 i = 0; i < NumberOfSpawns; i++)
+		{
+			FSpawnPosition SpawnPosition;
+			SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
+			SpawnPosition.Scale = FMath::RandRange(minScale, maxScale);
+			if (GetEmptyLocation(SpawnPosition.Location, Radius))
+			{
+				PlaceActor(ToSpawn, SpawnPosition);
+			}
+		}
+	}
 
-	// returns true if something if something exists near this radius
+	void PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition);
+
+	void PlaceActor(TSubclassOf<APawn> ToSpawn, const FSpawnPosition & SpawnPosition);
+
 	bool DoesAnythingExistNearby(FVector Location, int32 Radius);
 
 	bool GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius);
 
-	void PositionActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition);
 
 	UActorPool* Pool = nullptr;
 
