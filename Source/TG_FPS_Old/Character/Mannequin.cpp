@@ -47,7 +47,7 @@ void AMannequin::BeginPlay()
 		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 		Gun->TPAnimInstance = GetMesh()->GetAnimInstance();
 	}
-	
+	FPCamera->Activate();
 
 }
 
