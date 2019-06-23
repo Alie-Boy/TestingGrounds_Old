@@ -78,6 +78,7 @@ bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
 void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & SpawnPosition)
 {
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ToSpawn);
+	if (SpawnedActor == nullptr) return;
 	SpawnedActor->SetActorLocation(SpawnPosition.Location);
 	SpawnedActor->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
 	SpawnedActor->SetActorScale3D( GetActorScale3D() * SpawnPosition.Scale );
@@ -86,9 +87,9 @@ void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition & Spawn
 
 void ATile::PlaceActor(TSubclassOf<APawn> ToSpawn, const FSpawnPosition & SpawnPosition)
 {
-	APawn* Pawn = GetWorld()->SpawnActor<APawn>(ToSpawn);
-	Pawn->SetActorLocation(SpawnPosition.Location);
-	Pawn->SetActorRotation(FRotator(0.f, SpawnPosition.Rotation, 0.f));
+	FRotator Rotation = FRotator(0.f, SpawnPosition.Rotation, 0.f);
+	//APawn* Pawn = 
+	GetWorld()->SpawnActor<APawn>(ToSpawn, SpawnPosition.Location, Rotation);
 	//Pawn->SpawnDefaultController();		Using "Placed in World or Spawned" option in BP_Character.
 }
 
