@@ -11,6 +11,7 @@ class UCameraComponent;
 class USkeletalMeshComponent;
 class UChildActorComponent;
 class AGun;
+class AController;
 
 UCLASS()
 class TG_FPS_OLD_API AMannequin : public ACharacter
@@ -32,6 +33,16 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGun> GunBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aiming")
+	float LineTraceRange = 10000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Aiming")
+	float CrosshairXLocation = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Aiming")
+	float CrosshairYLocation = 0.5f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,8 +58,14 @@ public:
 
 private:
 
+	APlayerController* PlayerController = nullptr;
+
 	AGun* Gun = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	void PullTrigger();
+
+	bool GetLookDirection(FVector & LookDirection);
+
+	FVector CameraLookDirection;
 };

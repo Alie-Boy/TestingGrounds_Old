@@ -6,6 +6,7 @@
 #include "Weapons/BallProjectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimInstance.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AGun::AGun()
@@ -38,14 +39,14 @@ void AGun::Tick(float DeltaTime)
 
 }
 
-void AGun::OnFire()
+void AGun::FireAt(FVector & AimLocation)
 {
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
-		const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
 		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 		const FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
+		const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, AimLocation);
 
 		UWorld* const World = GetWorld();
 		if (World != NULL)
@@ -74,5 +75,4 @@ void AGun::OnFire()
 			TPAnimInstance->Montage_Play(TPFireAnimation, 1.f);
 		}
 	}
-
 }

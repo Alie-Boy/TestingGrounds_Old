@@ -9,6 +9,7 @@
 #include "Components\ChildActorComponent.h"
 #include "Components\InputComponent.h"
 #include "Weapons\Gun.h"
+#include "GameFramework\PlayerController.h"
 
 // Sets default values
 AMannequin::AMannequin()
@@ -42,6 +43,7 @@ void AMannequin::BeginPlay()
 	if (IsPlayerControlled()) {
 		Gun->AttachToComponent(FPArms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 		Gun->FPAnimInstance = FPArms->GetAnimInstance();
+		PlayerController = Cast<APlayerController>(GetController());
 	}
 	else {
 		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -76,6 +78,51 @@ void AMannequin::UnPossessed()
 
 void AMannequin::PullTrigger()
 {
-	Gun->OnFire();
+	FVector AimLocation = FVector(0.f);
+	if (IsPlayerControlled())
+	{
+		if (GetLookDirection(CameraLookDirection))
+		{
+			FHitResult HitResult;
+			FVector StartTraceLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+			FVector EndTraceLocation = StartTraceLocation + (CameraLookDirection * LineTraceRange);
+			FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams(FName(""), false, this);
+			if (GetWorld()->LineTraceSingleByChannel(
+				HitResult,
+				StartTraceLocation,
+				EndTraceLocation,
+				ECC_Camera,
+				CollisionQueryParams
+			))
+			{
+				AimLocation = HitResult.ImpactPoint;
+			}
+			else
+			{
+				AimLocation = EndTraceLocation;
+			}
+		}
+	}
+	else
+	{
+		APawn* Character = GetWorld()->GetFirstPlayerController()->GetPawn();
+		if (Character == nullptr) return;
+		AimLocation = Character->GetActorLocation();
+	}
+	Gun->FireAt(AimLocation);
 }
 
+bool AMannequin::GetLookDirection(FVector & OUTLookDirection)
+{
+	FVector CameraLocation;
+	int32 ViewportSizeX;
+	int32 ViewportSizeY;
+	
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	return PlayerController->DeprojectScreenPositionToWorld(
+		ViewportSizeX * CrosshairXLocation,
+		ViewportSizeY * CrosshairYLocation,
+		CameraLocation,
+		OUTLookDirection
+	);
+}

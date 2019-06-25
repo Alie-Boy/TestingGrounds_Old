@@ -50,9 +50,10 @@ public:
 	class UAnimInstance* TPAnimInstance;
 
 	/** Fires a projectile. */
-	UFUNCTION(BlueprintCallable, Category=GamePlay)
-	void OnFire();
+	//UFUNCTION(BlueprintCallable, Category=GamePlay)
+	void FireAt(FVector & AimLocation);
 
 protected:
 
+private:
 };
