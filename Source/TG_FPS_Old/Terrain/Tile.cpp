@@ -26,7 +26,11 @@ void ATile::BeginPlay()
 void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	Pool->Return(NavMeshBoundsVolume);
+	if (Pool != nullptr && NavMeshBoundsVolume != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s] returned {%s}"), *GetName(), *NavMeshBoundsVolume->GetName());
+		Pool->Return(NavMeshBoundsVolume);
+	}
 }
 
 void ATile::SetNavMeshBoundPool(UActorPool * ActorPool)
@@ -65,7 +69,7 @@ bool ATile::GetEmptyLocation(FVector & OutSpawnPoint, int32 Radius)
 	UArrowComponent* Arrow = FindComponentByClass<UArrowComponent>();
 	FVector min = (Arrow->GetComponentLocation()) + FVector(-4000.f, -2000.f, 100.f);
 	FVector max = (Arrow->GetComponentLocation()) + FVector(-100.f , 2000.f, 100.f);
-	const int32 MAX_ATTEMPTS = 20;
+	const int32 MAX_ATTEMPTS = 10;
 	for (size_t i = 0; i != MAX_ATTEMPTS; ++i)
 	{
 		OutSpawnPoint = FMath::RandPointInBox(FBox(min, max));
